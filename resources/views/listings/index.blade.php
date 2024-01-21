@@ -1,4 +1,4 @@
-<h1>{{$heading}}</h1>
+{{--<h1>{{$heading}}</h1>--}}
 @extends('partials.layout')
 @section('content')
  @include('partials._hero')

@@ -15,28 +15,34 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-         User::factory(5)->create();
-
-         //Listing::factory(6)->create();
-
-         Listing::create([
-             'title'=>'Laravel Senior Developer',
-             'tag'=>'laravel , javascript',
-             'company'=>'ACME CROP',
-             'location'=>'Boston,MA',
-             'email'=>'email@email.com',
-             'website'=> 'https://www.example1.com',
-             'description'=>'mnjhrpfjbipjibhteibgvre'
+        // User::factory(5)->create();
+         $user=User::factory()->create([
+             'name' => 'John Doe',
+             'email' => 'john@gmail.com'
          ]);
-         Listing::create([
-             'title'=>'Laravel junior Developer',
-             'tag'=>'laravel , php',
-             'company'=>'ACME CROP',
-             'location'=>'Boston,MA',
-             'email'=>'email@example.com',
-             'website'=> 'https://www.example2.com',
-             'description'=>'mnjhrpfjbipjibhteibgvre'
+
+         Listing::factory(6)->create([
+             'user_id'=>$user->id
          ]);
+
+//         Listing::create([
+//             'title'=>'Laravel Senior Developer',
+//             'tag'=>'laravel , javascript',
+//             'company'=>'ACME CROP',
+//             'location'=>'Boston,MA',
+//             'email'=>'email@email.com',
+//             'website'=> 'https://www.example1.com',
+//             'description'=>'mnjhrpfjbipjibhteibgvre'
+//         ]);
+//         Listing::create([
+//             'title'=>'Laravel junior Developer',
+//             'tag'=>'laravel , php',
+//             'company'=>'ACME CROP',
+//             'location'=>'Boston,MA',
+//             'email'=>'email@example.com',
+//             'website'=> 'https://www.example2.com',
+//             'description'=>'mnjhrpfjbipjibhteibgvre'
+//         ]);
 
 
     }

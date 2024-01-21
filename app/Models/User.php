@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * @method static create(array $formFields)
+ */
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -42,4 +45,9 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    //Relationship With Listings
+    public function listings(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Listing::class,'user_id');
+    }
 }

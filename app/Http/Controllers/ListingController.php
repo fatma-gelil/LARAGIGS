@@ -4,39 +4,108 @@ namespace App\Http\Controllers;
 
 use App\Models\Listing;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rule;
 
 class ListingController extends Controller
 {
-    //show all listings
-    public function index(){
+    // Show all listings
+    public function index(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         return view('listings.index', [
-            'heading'=>'Latest Listing',
-            'listings'=>Listing::latest()->filter(request(['tag','search']))->simplepaginate(6)
+            'listings' => Listing::latest()->filter(request(['tag', 'search']))->paginate(6)
         ]);
     }
-    //show single listing
-    public function show(Listing $listing){
+
+    //Show single listing
+    public function show(Listing $listing): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         return view('listings.show', [
             'listing' => $listing
         ]);
     }
-    //show create form
-    public function create(){
+
+    // Show Create Form
+    public function create(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         return view('listings.create');
     }
-    //store listing  data
-    public function store(request $request){
+
+    // Store Listing Data
+    public function store(Request $request): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    {
         $formFields = $request->validate([
-            'title'=>'required',
-            'company'=>['required',Rule::unique('listings','company')],
-            'location'=>'required',
-            'website'=>'required',
-            'email'=>['required','email'],
-            'tag'=>'required',
-            'description'=>'required'
+            'title' => 'required',
+            'company' => ['required', Rule::unique('listings', 'company')],
+            'location' => 'required',
+            'website' => 'required',
+            'email' => ['required', 'email'],
+            'tags' => 'required',
+            'description' => 'required'
         ]);
+
+        if($request->hasFile('logo')) {
+            $formFields['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $formFields['user_id'] = auth()->id();
+
         Listing::create($formFields);
-        return redirect('/')->with('message','listing created successfully :)');
+
+        return redirect('/')->with('message', 'Listing created successfully!');
+    }
+
+    // Show Edit Form
+    public function edit(Listing $listing): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
+        return view('listings.edit', ['listing' => $listing]);
+    }
+
+    // Update Listing Data
+    public function update(Request $request, Listing $listing): \Illuminate\Http\RedirectResponse
+    {
+        // Make sure logged-in user is owner
+        if($listing->user_id != auth()->id()) {
+            abort(403, 'Unauthorized Action');
+        }
+
+        $formFields = $request->validate([
+            'title' => 'required',
+            'company' => ['required'],
+            'location' => 'required',
+            'website' => 'required',
+            'email' => ['required', 'email'],
+            'tags' => 'required',
+            'description' => 'required'
+        ]);
+
+        if($request->hasFile('logo')) {
+            $formFields['logo'] = $request->file('logo')->store('logos', 'public');
+        }
+
+        $listing->update($formFields);
+
+        return back()->with('message', 'Listing updated successfully!');
+    }
+
+    // Delete Listing
+    public function destroy(Listing $listing): \Illuminate\Foundation\Application|\Illuminate\Routing\Redirector|\Illuminate\Http\RedirectResponse|\Illuminate\Contracts\Foundation\Application
+    {
+        // Make sure logged in user is owner
+        if($listing->user_id != auth()->id()) {
+            abort(403, 'Unauthorized Action');
+        }
+
+        if($listing->logo && Storage::disk('public')->exists($listing->logo)) {
+            Storage::disk('public')->delete($listing->logo);
+        }
+        $listing->delete();
+        return redirect('/')->with('message', 'Listing deleted successfully');
+    }
+
+    // Manage Listings
+    public function manage(): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
+        return view('listings.manage', ['listings' => auth()->user()->listings()->get()]);
     }
 }

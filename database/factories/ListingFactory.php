@@ -19,7 +19,7 @@ class ListingFactory extends Factory
         return [
             'title'=>$this->faker->sentence(),
             'company'=>$this->faker->company(),
-            'tag'=>$this->faker->randomElement(['laravel,api,backend']),
+            'tags'=>'laravel,api,backend',
             'email'=>$this->faker->companyEmail(),
             'website'=>$this->faker->url(),
             'location'=>$this->faker->city(),

@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\ServiceProvider;
+use Nette\Utils\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,6 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-       // Model::ungruard();
+        //Model::ungruard();
+        //\Illuminate\Pagination\Paginator::useBootstrapFive();
     }
 }

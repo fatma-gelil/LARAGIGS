@@ -8,18 +8,21 @@ return new class extends Migration
 {
     /**
      * Run the migrations.
+     *
+     * @return void
      */
     public function up(): void
     {
         Schema::create('listings', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->string('logo')->nullable();
+            $table->string('tags');
             $table->string('company');
             $table->string('location');
             $table->string('email');
             $table->string('website');
-            $table->string('tag')->nullable();
             $table->longText('description');
             $table->timestamps();
         });
@@ -27,6 +30,8 @@ return new class extends Migration
 
     /**
      * Reverse the migrations.
+     *
+     * @return void
      */
     public function down(): void
     {
